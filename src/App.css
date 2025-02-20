@@ -1,38 +1,69 @@
 .App {
-  text-align: center;
+  font-family: Arial, sans-serif;
+ 
+  padding: 20px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.main-container {
+ height: 100vh;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.sidebar {
+  width: 25%; /* Sidebar takes 25% of the width */
+  background-color: #f4f4f4;
+  padding: 20px;
+  border-right: 1px solid #ddd;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
+.content {
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+  flex-grow: 1; /* Content takes remaining width */
+  padding: 20px;
+}
+.btn{
+  text-align:right;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
   color: white;
+  border: none;
+  cursor: pointer;
+}
+.login-form input {
+  margin: 10px;
+  padding: 10px;
+  width: 200px;
+  font-size: 16px;
 }
 
-.App-link {
-  color: #61dafb;
+.login-form button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.login-form button:hover {
+  background-color: #0056b3;
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+}
+
+.sign-out-btn {
+  width: 100px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.sign-out-btn:hover {
+  background-color: #cc0000;
 }
