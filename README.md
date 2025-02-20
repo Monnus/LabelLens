@@ -1,70 +1,72 @@
-# Getting Started with Create React App
+# 📸 LabelLens – Product Label Recognition App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**LabelLens** is a **serverless image recognition** web application built using **AWS Rekognition**. It helps users identify product labels from uploaded images, making it perfect for **inventory management** or **cataloging** tasks. The app supports both **authenticated** and **unauthenticated** users—unauthenticated users can instantly upload and analyze images, while authenticated users can access **history tracking** for all their uploads.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Features
 
-### `npm start`
+- **🖼 Image Upload:** Upload product images directly from the web interface.
+- **🏷 AWS Rekognition Integration:** Automatically detects product labels and objects.
+- **💾 DynamoDB Storage:** Stores image data, labels, and metadata for authenticated users.
+- **🔐 Cognito Authentication:** Optional user authentication to enable history tracking.
+- **⚡️ Serverless Architecture:** Built using AWS services to ensure scalability and cost-efficiency.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 📐 Architecture Overview
 
-### `npm test`
+The project leverages AWS **serverless** services:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **S3 Bucket** – For storing uploaded images.  
+- **API Gateway** – Acts as a bridge between the front end and backend (Lambda functions).  
+- **Lambda Functions** – Handles image processing with Rekognition and database storage.  
+- **AWS Rekognition** – Detects labels from uploaded images.  
+- **DynamoDB** – Stores image metadata and recognition results.  
+- **Cognito** – Manages user authentication (sign-in/sign-up).  
+- **Amplify** – Hosts and manages the front end.
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🛠 Tech Stack
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **Frontend:** React.js (using AWS Amplify & Amplify UI components)  
+- **Backend:** AWS Lambda (Node.js 20.x runtime)  
+- **Authentication:** AWS Cognito  
+- **Storage:** Amazon S3 & DynamoDB  
+- **Image Recognition:** AWS Rekognition  
+- **Hosting:** AWS Amplify Hosting  
+- **API Gateway:** REST API for Lambda integration  
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+---
 
-### `npm run eject`
+## ⚙️ Setup Guide
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Follow these steps to replicate or deploy **LabelLens**:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+---
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 1️⃣ AWS S3 – **Image Storage**
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+1. **Create an S3 Bucket** named:  
+   `image-rekognition-bucketf163b-dev`
+2. Enable **public access** for uploaded files.
+3. Define two folders inside the bucket:  
+   - `/uploads` – For uploaded images  
+   - `/processed` – (optional) For processed images (if needed)
 
-## Learn More
+4. Add the following **S3 bucket policy** to allow Lambda to access images:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowLambdaS3Access",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": ["s3:GetObject", "s3:PutObject"],
+      "Resource": "arn:aws:s3:::image-rekognition-bucketf163b-dev/uploads/*"
+    }
+  ]
+}
