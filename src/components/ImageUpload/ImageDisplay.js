@@ -16,7 +16,7 @@ const ImageDisplay = ({ uploadedImage, relatedImages }) => {
       <Flex direction="row" wrap="wrap" justifyContent="center" gap="20px">
         {relatedImages && relatedImages.length > 0 ? (
           relatedImages.map((image, index) => (
-            <Card key={index} padding="medium" backgroundColor="#f0f0f0" width="150px" height="150px" borderRadius="10px">
+            <Card key={index} padding="medium" backgroundColor="#f0f0f0" width="170px" height="150px" borderRadius="10px">
               <Image src={image} alt={`Related ${index}`} style={{ objectFit: 'cover', width: '100%', height: '100%' }} />
             </Card>
           ))

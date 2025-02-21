@@ -4,16 +4,6 @@
   padding: 20px;
 }
 
-.main-container {
- height: 100vh;
-}
-
-.sidebar {
-  width: 25%; /* Sidebar takes 25% of the width */
-  background-color: #f4f4f4;
-  padding: 20px;
-  border-right: 1px solid #ddd;
-}
 
 .content {
   align-items: center;

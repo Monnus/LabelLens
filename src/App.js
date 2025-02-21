@@ -24,21 +24,58 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <h1>Image Recognizer App</h1> <button className='btn' styles={{align  :"right"}} onClick={handleSignIn}>Sign In</button>
-      {!user ? (
-        <div className="login-form">
+    <div className="App" style={{ padding: "20px", fontFamily: "Arial, sans-serif" }}>
+      {/* Header with aligned buttons */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+        <h1 style={{ margin: 0 }}>Image Recognizer App</h1>
 
-          <p>Sign in to access your history</p>
+        {!user ? (
+          <button
+            onClick={handleSignIn}
+            style={{
+              backgroundColor: "#2d3748", // Sidebar color
+              color: "#fff",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "5px",
+              cursor: "pointer",
+              transition: "background-color 0.2s ease",
+            }}
+            onMouseOver={(e) => (e.target.style.backgroundColor = "#4a5568")} // Hover effect
+            onMouseOut={(e) => (e.target.style.backgroundColor = "#2d3748")}
+          >
+            Sign In
+          </button>
+        ) : (
+          <button
+            onClick={handleSignOut}
+            style={{
+              backgroundColor: "#2d3748", // Sidebar color
+              color: "#fff",
+              border: "none",
+              padding: "10px 20px",
+              borderRadius: "5px",
+              cursor: "pointer",
+              transition: "background-color 0.2s ease",
+            }}
+            onMouseOver={(e) => (e.target.style.backgroundColor = "#4a5568")} // Hover effect
+            onMouseOut={(e) => (e.target.style.backgroundColor = "#2d3748")}
+          >
+            Sign Out
+          </button>
+        )}
+      </div>
+
+      {/* Conditional rendering based on auth */}
+      {!user ? (
+        <div className="login-form" style={{ textAlign: "center", }}>
+          <p style={{ marginLeft: "250px" }}>Sign in to access your history</p>
           <UpLoadForm />
         </div>
       ) : (
-        <div className="main-container">
-          <p>Welcome, {user.profile?.email || user.profile?.name}!</p>
-          <button onClick={handleSignOut} className="sign-out-btn">Sign Out</button>
+        <div className="main-container" style={{ textAlign: "center" }}>
+          <p style={{ marginLeft: "250px" }}>Welcome, {user.profile?.email || user.profile?.name}!</p>
           <UpLoadForm />
-
-          {/* Display the ImageUpload form */}
         </div>
       )}
     </div>

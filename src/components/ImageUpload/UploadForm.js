@@ -81,7 +81,7 @@ export default function UpLoadForm() {
   const returnVersion1Front = () => {
     return (
       <div
-        styles={{
+        style={{
           display: "flex",
           flexDirection: "column",
           width: "100vw",
@@ -91,7 +91,7 @@ export default function UpLoadForm() {
         {/* Main content: file upload, image display, and results */}
         <div className="flex-1 p-6">
           {/* Upload Section */}
-          <div className="mt-6 p-4 bg-white shadow rounded-lg w-96 text-center mx-auto">
+          <div className="mt-6 p-4 bg-white shadow rounded-lg w-96 text-center mx-auto" >
             <input type="file" onChange={handleFileChange} className="mb-4" />
             <button
               onClick={handleUpload}
@@ -133,17 +133,19 @@ export default function UpLoadForm() {
   };
   const returnVersion2Front = () => {
     return (
+        <>
       <div>
         <ImageHistoryList selectedFile={UploadILeNameExtention} setResults={setResults}/>
       </div>
+      {returnVersion1Front()}</>
     );
   };
 // below are JSX thats going to front-end
   return (
     <div
-      styles={{
+    className="List&Uploads"
+      style={{
         display: "flex",
-        flexDirection: "column",
         width: "100vw",
         height: "100vh",
       }}

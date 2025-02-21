@@ -1,27 +1,38 @@
-import React from 'react';
+import React, { useState } from "react";
 
-function ImageHistoryItem({ item, setResults}) {
+function ImageHistoryItem({ item, setResults }) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const onClickRecord = async () => {
     const apiGatewayUrl = `https://v4gxql7uyk.execute-api.us-east-1.amazonaws.com/Dev/images/${item}`;
+    const response = await fetch(apiGatewayUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-
-    const onClickRecord= async ()=>{
-   const response = await fetch(apiGatewayUrl, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        const data = await response.json();
-        setResults(data);
-        console.log('====================================');
-        console.log("uploadProgress", data);
-        console.log('====================================');
-    }
+    const data = await response.json();
+    setResults(data);
+    console.log("API Retrieval", data);
+  };
 
   return (
-    <li onClick={onClickRecord(item)} className="flex items-center space-x-1 p-3 bg-gray-700 rounded-md hover:bg-gray-600">
-      <div className="text-sm text-gray-200">{item}</div>
+    <li
+      onClick={() => onClickRecord(item)}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        padding: "12px",
+        backgroundColor: isHovered ? "#4a5568" : "#2d3748",
+        borderRadius: "6px",
+        cursor: "pointer",
+        transition: "background-color 0.2s ease",
+      }}
+    >
+      <div style={{ fontSize: "0.9rem", color: "#e2e8f0" }}>{item}</div>
     </li>
   );
 }
