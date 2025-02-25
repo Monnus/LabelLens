@@ -5,7 +5,7 @@ export default function ImageHistoryList({ selectedFile, setResults }) {
   const [history, setHistory] = useState([
     "camera.jpg",
     "laptop.jpg",
-    "headphones.jpg",
+    "1740046540419-coffee.jpg",
   ]);
 
   useEffect(() => {

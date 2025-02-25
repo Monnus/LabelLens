@@ -3,23 +3,21 @@ import React, { useState } from "react";
 function ImageHistoryItem({ item, setResults }) {
   const [isHovered, setIsHovered] = useState(false);
 
-  const onClickRecord = async () => {
-    const apiGatewayUrl = `https://v4gxql7uyk.execute-api.us-east-1.amazonaws.com/Dev/images/${item}`;
+  const onClickRecord = async (event,item) => {
+    const apiGatewayUrl = `https://v4gxql7uyk.execute-api.us-east-1.amazonaws.com/Dev/images/`;
     const response = await fetch(apiGatewayUrl, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      method: "GET"
     });
 
     const data = await response.json();
     setResults(data);
     console.log("API Retrieval", data);
+    console.log("event Retrieval", event);
   };
 
   return (
     <li
-      onClick={() => onClickRecord(item)}
+      onClick={(event) => onClickRecord(item)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       style={{
