@@ -134,7 +134,7 @@ export default function UpLoadForm() {
           </button>
         </>
       )}
-      ----------------
+      
       {/* Display Image after file is selected */}
       {selectedFile && (
         <ImageDisplay
