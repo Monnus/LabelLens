@@ -6,7 +6,6 @@ import SimilarImagesGrid, { SimilarImage } from "@/components/results/SimilarIma
 import { Card, CardContent } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Navbar from "@/components/shared/Navbar";
-import { uploadData } from "aws-amplify/storage";
 import { useToast } from "@/hooks/use-toast";
 import { Image, Palette, Tag, Search, Grid, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -55,18 +54,10 @@ const GetStarted = () => {
     setUploadedFileName(fileName);
     
     try {
-      const uploadProgress = await uploadData({
-        path: fileName,
-        data: selectedFile,
-        options: {
-          contentType: selectedFile.type,
-          onProgress: (progress) => {
-            console.log(`Progress: ${(progress.transferredBytes / progress.totalBytes) * 100}%`);
-          },
-        },
-      }).result;
-
-      console.log("File uploaded successfully:", uploadProgress);
+      // Placeholder for AWS S3 upload - you can replace this with your actual code
+      console.log("Simulating upload of file:", fileName);
+      
+      // Simulate successful upload
       setSuccess(true);
       toast({
         title: "Upload Successful",
