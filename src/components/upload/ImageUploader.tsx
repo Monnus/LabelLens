@@ -1,10 +1,12 @@
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef} from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Upload, X, ImageIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { uploadData } from "aws-amplify/storage";
+
 
 type ImageUploaderProps = {
   onImageSelected: (file: File) => void;
@@ -20,11 +22,20 @@ const ImageUploader = ({
   maxSizeMB = 5
 }: ImageUploaderProps) => {
   const [isDragging, setIsDragging] = useState(false);
+  const [uploadedFileName, setUploadedFileName] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
+
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+const handleButtonClick = () => {
+  if (fileInputRef.current) {
+    fileInputRef.current.click();
+  }
+};
   
   const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -71,6 +82,7 @@ const ImageUploader = ({
 
   const processFile = (file: File) => {
     if (!validateFile(file)) return;
+    console.log("File selected:", file); // Debugging
     
     setSelectedFile(file);
     onImageSelected(file);
@@ -95,28 +107,36 @@ const ImageUploader = ({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
+      console.log("file has been selected from desktop",e.target.files)
       processFile(e.target.files[0]);
     }
   };
 
   const handleUpload = async () => {
     if (!selectedFile || !onImageUpload) return;
-    
+    console.log("Upload function missing or no file selected!");
     setIsUploading(true);
     setUploadProgress(0);
     
-    // Simulating upload progress
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 95) {
-          clearInterval(interval);
-          return 95;
-        }
-        return prev + 5;
-      });
-    }, 200);
+  const fileName = `uploads/${Date.now()}-${selectedFile.name}`;
+  console.log("here  is veriable,", fileName + "----------here is State selectedFile", selectedFile)
+     
+     try {
+       const uploadProgress = await uploadData({
+         path: fileName,
+         data: selectedFile,
+         options: {
+           contentType: selectedFile.type,
+           onProgress: (progress) => {
+            setUploadProgress((progress.transferredBytes / progress.totalBytes) * 100);
+             console.log(`Progress: ${(progress.transferredBytes / progress.totalBytes) * 100}%`);
+           },
+         },
+       }).result;
+       
+       console.log("File uploaded successfully:", uploadProgress);
     
-    try {
+    
       await onImageUpload(selectedFile);
       setUploadProgress(100);
       toast({
@@ -130,7 +150,7 @@ const ImageUploader = ({
         variant: "destructive"
       });
     } finally {
-      clearInterval(interval);
+    
       setIsUploading(false);
     }
   };
@@ -153,11 +173,12 @@ const ImageUploader = ({
         >
           <CardContent className="p-6 flex flex-col items-center justify-center min-h-[300px]">
             <input
-              type="file"
-              id="file-upload"
-              className="sr-only"
-              onChange={handleFileChange}
-              accept={allowedTypes.join(",")}
+               type="file"
+               id="file-upload"
+               ref={fileInputRef} // Attach the ref
+               className="sr-only"
+               onChange={handleFileChange}
+               accept={allowedTypes.join(",")}
             />
             <label htmlFor="file-upload" className="w-full h-full flex flex-col items-center justify-center cursor-pointer">
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
@@ -173,7 +194,7 @@ const ImageUploader = ({
               <p className="text-muted-foreground text-center mb-4">
                 Drag and drop or click to browse
               </p>
-              <Button type="button">Select Image</Button>
+              <Button type="button"  onClick={handleButtonClick}>Select Image</Button>
               <p className="text-xs text-muted-foreground mt-4">
                 Supported formats: JPEG, PNG, GIF, WebP (max {maxSizeMB}MB)
               </p>
@@ -218,7 +239,7 @@ const ImageUploader = ({
                   disabled={isUploading}
                   className="w-full"
                 >
-                  {isUploading ? 'Uploading...' : 'Analyze Image'}
+                  {isUploading ? 'Uploading...' : 'Upload Image'}
                 </Button>
               )}
             </div>
