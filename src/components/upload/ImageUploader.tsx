@@ -1,5 +1,5 @@
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -25,6 +25,14 @@ const ImageUploader = ({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
+  
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
   
   const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -105,19 +113,23 @@ const ImageUploader = ({
     setIsUploading(true);
     setUploadProgress(0);
     
-    // Simulating upload progress
-    const interval = setInterval(() => {
-      setUploadProgress(prev => {
-        if (prev >= 95) {
-          clearInterval(interval);
-          return 95;
-        }
-        return prev + 5;
-      });
-    }, 200);
-    
     try {
+      // This would be where we'd use AWS Amplify in a real implementation
+      // const fileName = `uploads/${Date.now()}-${selectedFile.name}`;
+      // const uploadResult = await uploadData({
+      //   path: fileName,
+      //   data: selectedFile,
+      //   options: {
+      //     contentType: selectedFile.type,
+      //     onProgress: (progress) => {
+      //       setUploadProgress((progress.transferredBytes / progress.totalBytes) * 100);
+      //     },
+      //   },
+      // }).result;
+      
+      // For now, we'll just call the provided onImageUpload function
       await onImageUpload(selectedFile);
+      
       setUploadProgress(100);
       toast({
         title: "Upload Complete",
@@ -130,7 +142,6 @@ const ImageUploader = ({
         variant: "destructive"
       });
     } finally {
-      clearInterval(interval);
       setIsUploading(false);
     }
   };
@@ -155,6 +166,7 @@ const ImageUploader = ({
             <input
               type="file"
               id="file-upload"
+              ref={fileInputRef}
               className="sr-only"
               onChange={handleFileChange}
               accept={allowedTypes.join(",")}
@@ -173,7 +185,7 @@ const ImageUploader = ({
               <p className="text-muted-foreground text-center mb-4">
                 Drag and drop or click to browse
               </p>
-              <Button type="button">Select Image</Button>
+              <Button type="button" onClick={handleButtonClick}>Select Image</Button>
               <p className="text-xs text-muted-foreground mt-4">
                 Supported formats: JPEG, PNG, GIF, WebP (max {maxSizeMB}MB)
               </p>
@@ -218,7 +230,7 @@ const ImageUploader = ({
                   disabled={isUploading}
                   className="w-full"
                 >
-                  {isUploading ? 'Uploading...' : 'Analyze Image'}
+                  {isUploading ? 'Uploading...' : 'Upload Image'}
                 </Button>
               )}
             </div>
