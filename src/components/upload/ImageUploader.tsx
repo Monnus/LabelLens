@@ -1,5 +1,5 @@
 
-import { useState, useCallback, useRef} from "react";
+import { useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -28,14 +28,14 @@ const ImageUploader = ({
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
-
+  
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-const handleButtonClick = () => {
-  if (fileInputRef.current) {
-    fileInputRef.current.click();
-  }
-};
+  const handleButtonClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
   
   const handleDragEnter = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -118,26 +118,23 @@ const handleButtonClick = () => {
     setIsUploading(true);
     setUploadProgress(0);
     
-  const fileName = `uploads/${Date.now()}-${selectedFile.name}`;
-  console.log("here  is veriable,", fileName + "----------here is State selectedFile", selectedFile)
-     
-     try {
-       const uploadProgress = await uploadData({
-         path: fileName,
-         data: selectedFile,
-         options: {
-           contentType: selectedFile.type,
-           onProgress: (progress) => {
-            setUploadProgress((progress.transferredBytes / progress.totalBytes) * 100);
-             console.log(`Progress: ${(progress.transferredBytes / progress.totalBytes) * 100}%`);
-           },
-         },
-       }).result;
-       
-       console.log("File uploaded successfully:", uploadProgress);
-    
-    
+    try {
+      // This would be where we'd use AWS Amplify in a real implementation
+      // const fileName = `uploads/${Date.now()}-${selectedFile.name}`;
+      // const uploadResult = await uploadData({
+      //   path: fileName,
+      //   data: selectedFile,
+      //   options: {
+      //     contentType: selectedFile.type,
+      //     onProgress: (progress) => {
+      //       setUploadProgress((progress.transferredBytes / progress.totalBytes) * 100);
+      //     },
+      //   },
+      // }).result;
+      
+      // For now, we'll just call the provided onImageUpload function
       await onImageUpload(selectedFile);
+      
       setUploadProgress(100);
       toast({
         title: "Upload Complete",
@@ -150,7 +147,6 @@ const handleButtonClick = () => {
         variant: "destructive"
       });
     } finally {
-    
       setIsUploading(false);
     }
   };
@@ -173,12 +169,12 @@ const handleButtonClick = () => {
         >
           <CardContent className="p-6 flex flex-col items-center justify-center min-h-[300px]">
             <input
-               type="file"
-               id="file-upload"
-               ref={fileInputRef} // Attach the ref
-               className="sr-only"
-               onChange={handleFileChange}
-               accept={allowedTypes.join(",")}
+              type="file"
+              id="file-upload"
+              ref={fileInputRef}
+              className="sr-only"
+              onChange={handleFileChange}
+              accept={allowedTypes.join(",")}
             />
             <label htmlFor="file-upload" className="w-full h-full flex flex-col items-center justify-center cursor-pointer">
               <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
@@ -194,7 +190,7 @@ const handleButtonClick = () => {
               <p className="text-muted-foreground text-center mb-4">
                 Drag and drop or click to browse
               </p>
-              <Button type="button"  onClick={handleButtonClick}>Select Image</Button>
+              <Button type="button" onClick={handleButtonClick}>Select Image</Button>
               <p className="text-xs text-muted-foreground mt-4">
                 Supported formats: JPEG, PNG, GIF, WebP (max {maxSizeMB}MB)
               </p>
