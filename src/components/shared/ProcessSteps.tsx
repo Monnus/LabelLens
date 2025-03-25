@@ -1,4 +1,3 @@
-
 import { CheckCircle2, Upload, Search, CircleDashed } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { UploadState } from "@/types/imageProcessing";

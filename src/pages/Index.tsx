@@ -3,9 +3,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { ImageIcon, Upload, History, InfoIcon } from "lucide-react";
+import { AuthProps } from "@/types/AuthProps";
 
-const Index = () => {
+
+const Index:React.FC<AuthProps> = ({auth}) => {
   const navigate = useNavigate();
+  // const auth=useAuth();
+  console.log("Here is auth", auth);
+  
+
+  const isUserSignedIn = ():void=>{
+    console.log(auth.isAuthenticated)
+if(auth.isAuthenticated) return navigate("/dashboard");
+  navigate("get-started");
+  };
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-background to-muted">
@@ -18,7 +29,7 @@ const Index = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
           <Button 
             size="lg" 
-            onClick={() => navigate("/get-started")}
+            onClick={() => isUserSignedIn()}
             className="gap-2"
           >
             <Upload size={18} />

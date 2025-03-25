@@ -5,8 +5,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Upload, X, ImageIcon } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { uploadData } from "aws-amplify/storage";
-
 
 type ImageUploaderProps = {
   onImageSelected: (file: File) => void;
@@ -22,7 +20,6 @@ const ImageUploader = ({
   maxSizeMB = 5
 }: ImageUploaderProps) => {
   const [isDragging, setIsDragging] = useState(false);
-  const [uploadedFileName, setUploadedFileName] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -82,7 +79,6 @@ const ImageUploader = ({
 
   const processFile = (file: File) => {
     if (!validateFile(file)) return;
-    console.log("File selected:", file); // Debugging
     
     setSelectedFile(file);
     onImageSelected(file);
@@ -107,14 +103,13 @@ const ImageUploader = ({
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      console.log("file has been selected from desktop",e.target.files)
       processFile(e.target.files[0]);
     }
   };
 
   const handleUpload = async () => {
     if (!selectedFile || !onImageUpload) return;
-    console.log("Upload function missing or no file selected!");
+    
     setIsUploading(true);
     setUploadProgress(0);
     

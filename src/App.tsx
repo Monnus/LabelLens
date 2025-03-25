@@ -1,9 +1,10 @@
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { AuthProvider } from "react-oidc-context";
+import { AuthProvider, useAuth } from "react-oidc-context";
 import Index from "./pages/Index";
 import GetStarted from "./pages/GetStarted";
 import Login from "./pages/Login";
@@ -13,20 +14,18 @@ import NotFound from "./pages/NotFound";
 import { Amplify } from "aws-amplify";
 import amplifyconfig from "./amplifyconfiguration.json";
 
-
-
 // Cognito Auth Config
 Amplify.configure(amplifyconfig);
-
 
 const cognitoAuthConfig = {
   authority: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_15rmVRJ6C",
   client_id: "4488b559kpbreinm4uvanfec8k",
-  redirect_uri: "http://localhost:8080/callback",
+  redirect_uri: "http://localhost:8080/dashboard",
   response_type: "code",
   scope: "openid",
 };
 
+// Query client instance
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -35,19 +34,41 @@ const App = () => (
       <Toaster />
       <Sonner />
       <AuthProvider {...cognitoAuthConfig}>
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/get-started" element={<GetStarted />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/dashboard/upload" element={<DashboardUpload />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <AppContent /> {/* Handle authentication state in a separate component */}
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
+
+// Main App component
+const AppContent: React.FC = () => {  // ❌ Removed AuthProps here
+  const auth = useAuth();
+  const [authReady, setAuthReady] = useState(false);
+
+  // Wait until authentication is loaded
+  useEffect(() => {
+    if (!auth.isLoading) {
+      setAuthReady(true);
+    }
+  }, [auth.isLoading]);
+
+  // Show a loading screen while authentication is still being processed
+  if (!authReady) {
+    return <div style={{ textAlign: "center", marginTop: "50px" }}>Loading authentication...</div>;
+  }
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Index auth={auth} />} />
+        <Route path="/get-started" element={<GetStarted  />} />
+        <Route path="/login" element={<Login/>} />
+        <Route path="/dashboard" element={<Dashboard auth={auth} />} />
+        <Route path="/dashboard/upload" element={<DashboardUpload auth={auth} />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+};
 
 export default App;
