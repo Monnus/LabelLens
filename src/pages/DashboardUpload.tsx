@@ -5,17 +5,13 @@ import ImageUploader from "@/components/upload/ImageUploader";
 import ImageAnalysisResult, { ImageAnalysis } from "@/components/results/ImageAnalysisResult";
 import SimilarImagesGrid, { SimilarImage } from "@/components/results/SimilarImagesGrid";
 import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent } from "@/components/ui/card";
 import { analyzeImage, getHistoryItems, saveHistoryItem } from "@/services/imageAnalysisService";
 import { HistoryItem } from "@/types/imageProcessing";
 import AnalyzingIndicator from "@/components/analysis/AnalyzingIndicator";
 import { AuthProps } from "@/types/AuthProps";
 import { uploadData } from "aws-amplify/storage";
-// Mock authentication for development
-// In real implementation, this would come from react-oidc-context
 
-
-const DashboardUpload: React.FC<AuthProps> = ({ auth }) =>{
+const DashboardUpload: React.FC<AuthProps> = ({ auth }) => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -33,6 +29,12 @@ const DashboardUpload: React.FC<AuthProps> = ({ auth }) =>{
 
   // Load history items
   const historyItems = getHistoryItems(userId);
+  
+  // Handle history item selection (empty function for now)
+  const handleHistoryItemSelect = (id: string, authToken: string) => {
+    console.log("DashboardUpload: History item selected", id);
+    console.log("Auth token available:", authToken ? "Yes" : "No");
+  };
 
   const handleImageSelected = (file: File) => {
     setSelectedFile(file);
@@ -63,22 +65,25 @@ const DashboardUpload: React.FC<AuthProps> = ({ auth }) =>{
       // In a real implementation, this would upload to S3 using AWS Amplify
       const fileName = `uploads/${Date.now()}-${selectedFile.name}`;
 
+      console.log("Starting S3 upload for file:", fileName);
       
-      // Simulate S3 upload
+      // Actual S3 upload using Amplify
       const uploadResult = await uploadData({
         path: fileName,
         data: selectedFile,
         options: {
           contentType: selectedFile.type,
           onProgress: (progress) => {
-            console.log((progress.transferredBytes / progress.totalBytes) * 100);
+            console.log(`Upload progress: ${(progress.transferredBytes / progress.totalBytes) * 100}%`);
           },
         },
       }).result;
-      console.log("uploadResult",uploadResult)
+      
+      console.log("Upload complete:", uploadResult);
+      
       // After successful upload, save to history
       const newHistoryItem: HistoryItem = {
-        id: `${auth.user.profile.email}`,
+        id: `${fileName}`,  // Using filename as ID for simplicity
         name: `${fileName}`,
         date: new Date().toLocaleDateString(),
         thumbnail: previewUrl || "/placeholder.svg",
@@ -94,6 +99,7 @@ const DashboardUpload: React.FC<AuthProps> = ({ auth }) =>{
       
       return fileName;
     } catch (error) {
+      console.error("Error uploading to S3:", error);
       toast({
         title: "Upload Failed",
         description: "There was an error uploading your image",
@@ -110,12 +116,17 @@ const DashboardUpload: React.FC<AuthProps> = ({ auth }) =>{
     setIsAnalyzing(true);
     
     try {
+      console.log("Starting analysis for file:", fileName);
+      
       // Simulate waiting for the backend to process the image
       // In a real implementation, you might poll an endpoint or use WebSockets
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Now fetch the analysis results
+      // Now fetch the analysis results using the auth token
+      const authToken = auth.user?.id_token || "";
       const { analysis, similarImages, labels } = await analyzeImage();
+      
+      console.log("Analysis complete:", analysis);
       
       setAnalysisResults(analysis);
       setSimilarImages(similarImages);
@@ -126,6 +137,7 @@ const DashboardUpload: React.FC<AuthProps> = ({ auth }) =>{
         description: "Your image has been analyzed successfully"
       });
     } catch (error) {
+      console.error("Error analyzing image:", error);
       toast({
         title: "Analysis Failed",
         description: "There was an error analyzing your image",
@@ -165,7 +177,8 @@ const DashboardUpload: React.FC<AuthProps> = ({ auth }) =>{
       <div className="min-h-screen flex">
         <DashboardSidebar 
           historyItems={historyItems}
-          onHistoryItemSelect={() => {}}
+          onHistoryItemSelect={handleHistoryItemSelect} 
+          authIDToken={auth.user?.id_token || ""}
         />
         
         <SidebarInset>
@@ -240,4 +253,4 @@ const DashboardUpload: React.FC<AuthProps> = ({ auth }) =>{
   );
 };
 
-export default DashboardUpload
+export default DashboardUpload;

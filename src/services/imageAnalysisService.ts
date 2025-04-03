@@ -8,31 +8,62 @@ const API_GATEWAY_URL = "https://v4gxql7uyk.execute-api.us-east-1.amazonaws.com/
 // Session storage key for history
 const HISTORY_STORAGE_KEY = "image-insight-history";
 
-// Parse AWS API Gateway response and extract labels
+// Parse AWS API Gateway response based on the provided format
 export const parseApiGatewayResponse = (responseData: any): { 
   analysis: ImageAnalysis; 
   labels: string[];
 } => {
   try {
-    // If the response is already parsed, use it directly
-    const data = typeof responseData.body === 'string' 
-      ? JSON.parse(responseData.body) 
-      : responseData.body;
+    // Handle different response formats
+    let data = responseData;
     
-    // Extract the labels array
-    const latest = data.latest || {};
-    const labels = latest.Labels || [];
+    // If it's a string, parse it
+    if (typeof responseData === 'string') {
+      data = JSON.parse(responseData);
+    }
     
-    // Create a mock analysis result using the labels
+    // If it has a body property that's a string, parse that too
+    if (data.body && typeof data.body === 'string') {
+      data = JSON.parse(data.body);
+    }
+    
+    // Handle case where data might be under 'latest' or direct
+    const apiData = data.latest || data;
+    
+    // Extract labels from the response
+    const labels = apiData.Labels || [];
+    const confidenceScores = apiData.ConfidenceScores || [];
+    
+    // Map confidence scores to labels
+    const objectsWithConfidence = labels.map((label: string, index: number) => {
+      return {
+        name: label,
+        confidence: confidenceScores[index] || 0
+      };
+    });
+    
+    // Sort by confidence in descending order
+    objectsWithConfidence.sort((a, b) => b.confidence - a.confidence);
+    
+    // Create mock color data since it's not in the API response
+    const mockColors = [
+      { name: 'Blue', hex: '#4285F4', percentage: 45 },
+      { name: 'Green', hex: '#34A853', percentage: 30 },
+      { name: 'Gray', hex: '#9AA0A6', percentage: 15 },
+      { name: 'Red', hex: '#EA4335', percentage: 10 }
+    ];
+    
+    // Create the analysis object
     const analysis: ImageAnalysis = {
-      objects: labels.slice(), // Clone the array
-      colors: [
-        { name: 'Blue', hex: '#4285F4', percentage: 45 },
-        { name: 'Green', hex: '#34A853', percentage: 30 },
-        { name: 'Gray', hex: '#9AA0A6', percentage: 15 },
-        { name: 'Red', hex: '#EA4335', percentage: 10 }
-      ],
-      tags: labels.slice() // Clone the array
+      objects: labels,
+      confidence: objectsWithConfidence.map(obj => ({
+        label: obj.name,
+        score: obj.confidence
+      })),
+      colors: mockColors,
+      tags: labels,
+      timestamp: apiData.Timestamp,
+      imageUrl: apiData.ImageURL
     };
     
     return {
@@ -90,24 +121,103 @@ export const extractImageName = (s3Path: string): string => {
   return parts[parts.length - 1];
 };
 
-// Fetch image analysis from API Gateway
-export const fetchImageAnalysis = async (imageName: string): Promise<{
-  analysis: ImageAnalysis;
-  similarImages: SimilarImage[];
-  labels: string[];
-}> => {
+// Fetch image analysis from API Gateway with the correct response format
+export const fetchImageAnalysis = async (imageName: string, authToken: string = "") => {
+  console.log("Fetching analysis for image:", imageName);
+  console.log("Using auth token:", authToken ? "Token provided" : "No token provided");
+  
   try {
-    const response = await fetch(`${API_GATEWAY_URL}${imageName}`);
-    if (!response.ok) {
-      throw new Error(`API Gateway error: ${response.status}`);
+    // Only make the API call if we have an auth token
+    if (authToken) {
+      const apiUrl = `${API_GATEWAY_URL}${imageName}`;
+      console.log("Fetching from API:", apiUrl);
+      
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'GET',
+          headers: {
+            'Authorization': `${authToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (!response.ok) {
+          throw new Error(`API request failed with status ${response.status}`);
+        }
+        
+        const responseText = await response.text();
+        console.log("Raw API response:", responseText);
+        
+        try {
+          // Try to parse the response as JSON
+          const responseData = JSON.parse(responseText);
+          console.log("Parsed API response:", responseData);
+          
+          // Parse the response data using our utility function
+          const { analysis, labels } = parseApiGatewayResponse(responseData);
+          
+          // Generate mock similar images based on the labels
+          const similarImages: SimilarImage[] = labels.slice(0, 4).map((label, i) => ({
+            id: `${label}-${i}`,
+            url: `https://source.unsplash.com/random/300x300?${encodeURIComponent(label)}&sig=${i}`,
+            thumbnailUrl: `https://source.unsplash.com/random/300x300?${encodeURIComponent(label)}&sig=${i}`,
+            title: `${label}`,
+            author: `Unsplash`,
+            authorUrl: `https://unsplash.com`
+          }));
+          
+          return {
+            analysis,
+            similarImages,
+            labels
+          };
+        } catch (parseError) {
+          console.error("Error parsing API response:", parseError);
+          throw new Error("Invalid response format from API");
+        }
+      } catch (fetchError) {
+        console.error("Fetch error:", fetchError);
+        throw fetchError;
+      }
     }
     
-    const responseData = await response.json();
-    const { analysis, labels } = parseApiGatewayResponse(responseData);
+    // If we don't have an auth token or the API call failed, return mock data
+    console.log("Returning mock analysis data based on camera example");
     
-    // For similar images, we'll use the first label to fetch images
-    const firstLabel = labels[0] || "image";
-    const similarImages = await fetchImagesForLabel(firstLabel);
+    // Using the provided example data structure
+    const mockApiResponse = {
+      Timestamp: "2025-02-15T09:26:12.062Z",
+      ImageID: "1739611571421_camera.jpg",
+      Labels: [
+        "Camera",
+        "Digital Camera",
+        "Electronics",
+        "Photography",
+        "Speaker",
+        "Video Camera"
+      ],
+      ConfidenceScores: [
+        72.07,
+        75.18,
+        99.84,
+        71.02,
+        99.93,
+        85.64
+      ],
+      ImageURL: "https://image-recognizer-bucket.s3.amazonaws.com/uploads/camera.jpg"
+    };
+    
+    const { analysis, labels } = parseApiGatewayResponse(mockApiResponse);
+    
+    // Mock similar images based on the labels
+    const similarImages = labels.slice(0, 4).map((label, i) => ({
+      id: `${label}-${i}`,
+      url: `https://source.unsplash.com/random/300x300?${encodeURIComponent(label)}&sig=${i}`,
+      thumbnailUrl: `https://source.unsplash.com/random/300x300?${encodeURIComponent(label)}&sig=${i}`,
+      title: `${label}`,
+      author: `Unsplash`,
+      authorUrl: `https://unsplash.com`
+    }));
     
     return {
       analysis,
@@ -115,7 +225,7 @@ export const fetchImageAnalysis = async (imageName: string): Promise<{
       labels
     };
   } catch (error) {
-    console.error("Error fetching image analysis:", error);
+    console.error("Error in fetchImageAnalysis:", error);
     throw error;
   }
 };

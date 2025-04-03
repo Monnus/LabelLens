@@ -1,69 +1,72 @@
-# Welcome to your Lovable project
+# 📸 LabelLens – Product Label Recognition App
 
-## Project info
+**LabelLens** is a **serverless image recognition** web application built using **AWS Rekognition**. It helps users identify product labels from uploaded images, making it perfect for **inventory management** or **cataloging** tasks. The app supports both **authenticated** and **unauthenticated** users—unauthenticated users can instantly upload and analyze images, while authenticated users can access **history tracking** for all their uploads.
 
-**URL**: https://lovable.dev/projects/fc12bf19-88ab-4a6e-a75f-24ae030e87a7
+---
 
-## How can I edit this code?
+## 🚀 Features
 
-There are several ways of editing your application.
+- **🖼 Image Upload:** Upload product images directly from the web interface.
+- **🏷 AWS Rekognition Integration:** Automatically detects product labels and objects.
+- **💾 DynamoDB Storage:** Stores image data, labels, and metadata for authenticated users.
+- **🔐 Cognito Authentication:** Optional user authentication to enable history tracking.
+- **⚡️ Serverless Architecture:** Built using AWS services to ensure scalability and cost-efficiency.
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/fc12bf19-88ab-4a6e-a75f-24ae030e87a7) and start prompting.
+## 📐 Architecture Overview
 
-Changes made via Lovable will be committed automatically to this repo.
+The project leverages AWS **serverless** services:
 
-**Use your preferred IDE**
+- **S3 Bucket** – For storing uploaded images.  
+- **API Gateway** – Acts as a bridge between the front end and backend (Lambda functions).  
+- **Lambda Functions** – Handles image processing with Rekognition and database storage.  
+- **AWS Rekognition** – Detects labels from uploaded images.  
+- **DynamoDB** – Stores image metadata and recognition results.  
+- **Cognito** – Manages user authentication (sign-in/sign-up).  
+- **Amplify** – Hosts and manages the front end.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🛠 Tech Stack
 
-Follow these steps:
+- **Frontend:** React.js (using AWS Amplify & Amplify UI components)  
+- **Backend:** AWS Lambda (Node.js 20.x runtime)  
+- **Authentication:** AWS Cognito  
+- **Storage:** Amazon S3 & DynamoDB  
+- **Image Recognition:** AWS Rekognition  
+- **Hosting:** AWS Amplify Hosting  
+- **API Gateway:** REST API for Lambda integration  
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## ⚙️ Setup Guide
 
-# Step 3: Install the necessary dependencies.
-npm i
+Follow these steps to replicate or deploy **LabelLens**:
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+---
 
-**Edit a file directly in GitHub**
+### 1️⃣ AWS S3 – **Image Storage**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+1. **Create an S3 Bucket** named:  
+   `image-rekognition-bucketf163b-dev`
+2. Enable **public access** for uploaded files.
+3. Define two folders inside the bucket:  
+   - `/uploads` – For uploaded images  
+   - `/processed` – (optional) For processed images (if needed)
 
-**Use GitHub Codespaces**
+4. Add the following **S3 bucket policy** to allow Lambda to access images:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/fc12bf19-88ab-4a6e-a75f-24ae030e87a7) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowLambdaS3Access",
+      "Effect": "Allow",
+      "Principal": "*",
+      "Action": ["s3:GetObject", "s3:PutObject"],
+      "Resource": "arn:aws:s3:::image-rekognition-bucketf163b-dev/uploads/*"
+    }
+  ]
+}

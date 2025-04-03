@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { fetchImageAnalysis } from "@/services/imageAnalysisService";
 import { ImageAnalysis } from "@/components/results/ImageAnalysisResult";
@@ -9,15 +10,19 @@ import SelectedImageContent from "./SelectedImageContent";
 import { HistoryItem } from "@/types/imageProcessing";
 
 interface DashboardContentProps {
+  authIDToken: string;
   historyItems: HistoryItem[];
   selectedItemId?: string;
   isAuthenticated: boolean;
+  forceRefetch?: number; // A counter that, when incremented, forces a refetch
 }
 
-const DashboardContent = ({ 
-  historyItems, 
+const DashboardContent = ({
+  authIDToken,
+  historyItems,
   selectedItemId,
-  isAuthenticated 
+  isAuthenticated,
+  forceRefetch = 0
 }: DashboardContentProps) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [analysis, setAnalysis] = useState<ImageAnalysis | null>(null);
@@ -28,41 +33,54 @@ const DashboardContent = ({
   
   const { toast } = useToast();
   
-  // Fetch image analysis when a history item is selected
-  useEffect(() => {
-    const loadImageAnalysis = async () => {
-      if (!selectedItemId || !isAuthenticated) return;
-      
-      const selectedItem = historyItems.find(item => item.id === selectedItemId);
-      if (!selectedItem) return;
-      
-      setIsLoading(true);
-      setError(null);
-      
-      try {
-        const { analysis, similarImages, labels } = await fetchImageAnalysis(selectedItem.name);
-        setAnalysis(analysis);
-        setSimilarImages(similarImages);
-        setLabels(labels);
-        
-        // Set the first label as active by default
-        if (labels.length > 0) {
-          setActiveLabel(labels[0]);
-        }
-      } catch (error) {
-        setError("Failed to load image analysis");
-        toast({
-          title: "Error",
-          description: "Failed to load image analysis",
-          variant: "destructive"
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
+  // Fetch image analysis when a history item is selected or forceRefetch changes
+  const loadImageAnalysis = useCallback(async () => {
+    if (!selectedItemId || !isAuthenticated) return;
     
+    console.log("Loading analysis for image:", selectedItemId);
+    console.log("Auth token available:", authIDToken ? "Yes" : "No");
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const { analysis, similarImages, labels } = await fetchImageAnalysis(selectedItemId, authIDToken);
+      
+      console.log("Analysis results:", analysis);
+      console.log("Labels:", labels);
+      
+      setAnalysis(analysis);
+      setSimilarImages(similarImages);
+      setLabels(labels);
+      
+      // Set the first label as active by default
+      if (labels.length > 0) {
+        setActiveLabel(labels[0]);
+      }
+      
+      toast({
+        title: "Analysis loaded",
+        description: `Successfully loaded analysis for ${selectedItemId}`,
+      });
+    } catch (error) {
+      console.error("Error loading image analysis:", error);
+      setError("Failed to load image analysis");
+      toast({
+        title: "Error",
+        description: "Failed to load image analysis",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedItemId, authIDToken, isAuthenticated, toast]);
+
+  // Run when selectedItemId changes or when forceRefetch changes
+  useEffect(() => {
+    console.log("useEffect triggered - selectedItemId:", selectedItemId);
+    console.log("forceRefetch counter:", forceRefetch);
     loadImageAnalysis();
-  }, [selectedItemId, historyItems, toast, isAuthenticated]);
+  }, [loadImageAnalysis, selectedItemId, forceRefetch]);
 
   if (isLoading) {
     return (
