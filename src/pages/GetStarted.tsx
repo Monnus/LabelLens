@@ -148,8 +148,8 @@ const GetStarted = () => {
       // Extract labels and set them in state
       setLabels(parsedBody.latest.Labels || []);
 
-      // setAnalysisResults(parsedBody.analysis);
-      // setSimilarImages(parsedBody.similarImages);
+      setAnalysisResults(parsedBody.analysis);
+      setSimilarImages(parsedBody.similarImages);
       setProcessState('complete');
       
       toast({
@@ -172,27 +172,47 @@ const GetStarted = () => {
 
   // Utility function to retry analysis with backoff
   const fetchAnalysisWithRetry = async (retries = 3, delay = 1000) => {
-    // In a real implementation, this would call the API Gateway
-    // For now, we'll simulate the API response using the analyzeImage service
-    
-    // Simulating a network request with potential failure
     try {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Simulate API response
-      const { analyzeImage } = await import('@/services/imageAnalysisService');
-      return await analyzeImage();
-    } catch (error) {
-      if (retries <= 0) throw error;
-      
-      // Wait for the specified delay
-      await new Promise(resolve => setTimeout(resolve, delay));
-      
-      // Retry with one fewer retry and longer delay
-      return fetchAnalysisWithRetry(retries - 1, delay * 1.5);
-    }
+      let data:object;
+      let parsedBody:object; // Assuming your API response body contains a stringified JSON
+      // Attempt to make the API call
+      const response = await fetch(apiGatewayUrl, {
+        method: "GET",
+       
+      }).then((res) => {
+        if (!res.ok) {
+          // If the response is not ok, throw an error
+          throw new Error(`HTTP error! Status: ${res.status}`);
+        }
+        // Log the response object for debugging
+        data= res.json();
+        console.log("res", data);
+        return data // Assuming the response is in JSON format
+      })
+      .then((data) => {
+        // Once we get the parsed JSON data, we can work with it
+        console.log("Response data:", data);
+        // Process your data here as needed
+        return parsedBody=data.latest;
+
+      })
+      setLabels(parsedBody?.Labels || []);
+
+      setAnalysisResults(parsedBody);
+      setSimilarImages(parsedBody?.similarImages);
+      setProcessState('complete');
+  
+      // Parse the JSON response body
+      console.log("data",data);
+      console.log("Fetched data:", parsedBody);
+
+
+}catch(error){
+console.log(error);
+}
+    
   };
+  
 
   // Reset the process
   const handleRestart = () => {
@@ -318,7 +338,7 @@ const GetStarted = () => {
                 <Button 
                   variant="outline"
                   size="sm"
-                  onClick={handleRetryAnalysis}
+                  onClick={()=>fetchAnalysisWithRetry()}
                   className="mt-2"
                 >
                   <RefreshCcw className="mr-2 h-4 w-4" /> Retry Analysis
