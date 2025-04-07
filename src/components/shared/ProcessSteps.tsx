@@ -27,7 +27,7 @@ const ProcessSteps = ({ currentState }: StepIndicatorProps) => {
       label: 'Results', 
       icon: CheckCircle2, 
       states: ['complete'],
-      completed: [],
+      completed: ['complete'],
     },
   ];
 
