@@ -139,17 +139,18 @@ const GetStarted = () => {
         return response.json();  // Return the parsed JSON response
       })
       .then((data) => {
-        const parsedBody = data.body;  // Parse the actual body from the response
+        const parsedBody = data;  // Parse the actual body from the response
   
         // Log fetched data for debugging
         console.log("Fetched const data:", data);
-        console.log("Fetched const parsedBody:", parsedBody.latest);
+        console.log("Fetched const parsedBody:", parsedBody);
   
         // Set the analysis results, labels, and similar images
-        setLabels(parsedBody.Labels || []);
-        setAnalysisResults(parsedBody.analysis);
+        setLabels(parsedBody.latest.Labels || []);
+        setAnalysisResults(parsedBody);
         // setSimilarImages(parsedBody.similarImages);
         setProcessState('complete');
+        console.log("Labels", parsedBody.latest);
   
         // Show success toast
         toast({
