@@ -38,7 +38,7 @@ const GetStarted = () => {
 
   // Handle image selection
   const handleImageSelected = (file: File) => {
-    // setSelectedFile(file);
+    setSelectedFile(file);
     
     // Create preview URL
     const reader = new FileReader();
@@ -54,8 +54,6 @@ const GetStarted = () => {
     setAnalysisError(null);
     setAnalysisResults(null);
     setSimilarImages([]);
-   handleAnalyzeClick();
-
   };
 
   // Handle preview URL creation
@@ -206,10 +204,9 @@ const GetStarted = () => {
         // setSimilarImages(parsedBody?.);
         setProcessState('complete');
         setAnalysisError(null);
-        return parsedBody;
       })
   
-return response;
+return;
 }catch(error){
 console.log(error);
 }
@@ -341,7 +338,7 @@ console.log(error);
                 <Button 
                   variant="outline"
                   size="sm"
-                  onClick={handleRestart}
+                  onClick={()=>fetchAnalysisWithRetry()}
                   className="mt-2"
                 >
                   <RefreshCcw className="mr-2 h-4 w-4" /> Retry Analysis
@@ -365,7 +362,7 @@ console.log(error);
             <div className="text-center mt-8">
               <Button 
                 variant="outline" 
-                onClick={()=>handleAnalyzeClick()}
+                onClick={handleRestart}
               >
                 Upload Another Image
               </Button>
