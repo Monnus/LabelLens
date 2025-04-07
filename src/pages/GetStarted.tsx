@@ -124,57 +124,58 @@ const GetStarted = () => {
       });
       return;
     }
-
+  
     setIsAnalyzing(true);
     setProcessState('analyzing');
     setAnalysisError(null);
-
-    try {
-      const response = await fetch(apiGatewayUrl,{
-        method: "GET"
+  
+    fetch(apiGatewayUrl, {
+      method: "GET"
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error fetching results: ${response.statusText}`);
+        }
+        return response.json();  // Return the parsed JSON response
+      })
+      .then((data) => {
+        const parsedBody = data.body;  // Parse the actual body from the response
+  
+        // Log fetched data for debugging
+        console.log("Fetched const data:", data);
+        console.log("Fetched const parsedBody:", parsedBody.latest);
+  
+        // Set the analysis results, labels, and similar images
+        setLabels(parsedBody.Labels || []);
+        setAnalysisResults(parsedBody.analysis);
+        // setSimilarImages(parsedBody.similarImages);
+        setProcessState('complete');
+  
+        // Show success toast
+        toast({
+          title: "Analysis Complete",
+          description: `Found ${parsedBody.latest.Labels.length} labels in your image`
+        });
+      })
+      .catch((error) => {
+        console.error("Error analyzing image:", error);
+        setAnalysisError("Analysis failed. Please try again.");
+  
+        toast({
+          title: "Analysis Failed",
+          description: "There was an error analyzing your image",
+          variant: "destructive"
+        });
+      })
+      .finally(() => {
+        setIsAnalyzing(false);
       });
-      if (!response.ok) throw new Error(`Error fetching results: ${response.statusText}`);
-
-      const data = await response.json();
-      const parsedBody = JSON.parse(data.body); // This gives you the actual data
-      console.log("Fetched  const data = await response.json():", data);
-      console.log("Fetched const parsedBody = JSON.parse(data.body)", parsedBody.latest);
-
-      setAnalysisResults(data);
-      // Simulating API call to API Gateway
-      
-      if (!response) throw new Error("Failed to analyze image after multiple attempts");
-      
-      // Extract labels and set them in state
-      setLabels(parsedBody.latest.Labels || []);
-
-      setAnalysisResults(parsedBody.analysis);
-      setSimilarImages(parsedBody.similarImages);
-      setProcessState('complete');
-      
-      toast({
-        title: "Analysis Complete",
-        description: `Found ${parsedBody.latest.Labels.length} labels in your image`
-      });
-    } catch (error) {
-      console.error("Error analyzing image:", error);
-      setAnalysisError("Analysis failed. Please try again.");
-      
-      toast({
-        title: "Analysis Failed",
-        description: "There was an error analyzing your image",
-        variant: "destructive"
-      });
-    } finally {
-      setIsAnalyzing(false);
-    }
   };
+  
 
   // Utility function to retry analysis with backoff
   const fetchAnalysisWithRetry = async (retries = 3, delay = 1000) => {
     try {
-      let data:object;
-      let parsedBody:object; // Assuming your API response body contains a stringified JSON
       // Attempt to make the API call
       const response = await fetch(apiGatewayUrl, {
         method: "GET",
@@ -185,28 +186,24 @@ const GetStarted = () => {
           throw new Error(`HTTP error! Status: ${res.status}`);
         }
         // Log the response object for debugging
-        data= res.json();
-        console.log("res", data);
+        const data= res.json();
+        console.log("data", data);
         return data // Assuming the response is in JSON format
       })
       .then((data) => {
         // Once we get the parsed JSON data, we can work with it
         console.log("Response data:", data);
         // Process your data here as needed
-        return parsedBody=data.latest;
+       const parsedBody=data.latest;
 
+        setLabels(parsedBody?.Labels || []);
+        setAnalysisResults(parsedBody);
+        // setSimilarImages(parsedBody?.);
+        setProcessState('complete');
+        setAnalysisError(null);
       })
-      setLabels(parsedBody?.Labels || []);
-
-      setAnalysisResults(parsedBody);
-      setSimilarImages(parsedBody?.similarImages);
-      setProcessState('complete');
   
-      // Parse the JSON response body
-      console.log("data",data);
-      console.log("Fetched data:", parsedBody);
-
-
+return;
 }catch(error){
 console.log(error);
 }
