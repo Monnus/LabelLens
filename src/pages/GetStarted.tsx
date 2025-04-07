@@ -28,7 +28,7 @@ const GetStarted = () => {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [analysisError, setAnalysisError] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisResults, setAnalysisResults] = useState<ImageAnalysis | null>(null);
+  const [analysisResults, setAnalysisResults] = useState<ImageAnalysis | null>(undefined);
   const [similarImages, setSimilarImages] = useState<SimilarImage[]>([]);
   const [labels, setLabels] = useState<string[]>([]);
   const { toast } = useToast();
@@ -38,7 +38,7 @@ const GetStarted = () => {
 
   // Handle image selection
   const handleImageSelected = (file: File) => {
-    setSelectedFile(file);
+    // setSelectedFile(file);
     
     // Create preview URL
     const reader = new FileReader();
@@ -54,6 +54,8 @@ const GetStarted = () => {
     setAnalysisError(null);
     setAnalysisResults(null);
     setSimilarImages([]);
+   handleAnalyzeClick();
+
   };
 
   // Handle preview URL creation
@@ -139,23 +141,25 @@ const GetStarted = () => {
         return response.json();  // Return the parsed JSON response
       })
       .then((data) => {
-        const parsedBody = data;  // Parse the actual body from the response
+        const parsedBody = data.latest;  // Parse the actual body from the response
   
         // Log fetched data for debugging
         console.log("Fetched const data:", data);
         console.log("Fetched const parsedBody:", parsedBody);
   
         // Set the analysis results, labels, and similar images
-        setLabels(parsedBody.latest.Labels || []);
+        setLabels(parsedBody.Labels || []);
         setAnalysisResults(parsedBody);
+        setPreviewUrl(parsedBody.ImageURL)
         // setSimilarImages(parsedBody.similarImages);
         setProcessState('complete');
-        console.log("Labels", parsedBody.latest);
+        // console.log("Labels", parsedBody.latest);
+
   
         // Show success toast
         toast({
           title: "Analysis Complete",
-          description: `Found ${parsedBody.latest.Labels.length} labels in your image`
+          description: `Found ${parsedBody.Labels.length} labels in your image`
         });
       })
       .catch((error) => {
@@ -202,9 +206,10 @@ const GetStarted = () => {
         // setSimilarImages(parsedBody?.);
         setProcessState('complete');
         setAnalysisError(null);
+        return parsedBody;
       })
   
-return;
+return response;
 }catch(error){
 console.log(error);
 }
@@ -336,7 +341,7 @@ console.log(error);
                 <Button 
                   variant="outline"
                   size="sm"
-                  onClick={()=>fetchAnalysisWithRetry()}
+                  onClick={handleRestart}
                   className="mt-2"
                 >
                   <RefreshCcw className="mr-2 h-4 w-4" /> Retry Analysis
@@ -360,7 +365,7 @@ console.log(error);
             <div className="text-center mt-8">
               <Button 
                 variant="outline" 
-                onClick={handleRestart}
+                onClick={()=>handleAnalyzeClick()}
               >
                 Upload Another Image
               </Button>
