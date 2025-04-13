@@ -20,10 +20,12 @@ Amplify.configure(amplifyconfig);
 const cognitoAuthConfig = {
   authority: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_15rmVRJ6C",
   client_id: "4488b559kpbreinm4uvanfec8k",
-  redirect_uri: "http://localhost:8080/dashboard",
+  redirect_uri: import.meta.env.VITE_COGNITO_REDIRECT,
   response_type: "code",
   scope: "openid",
 };
+
+console.log("Redirect URI:", import.meta.env.VITE_COGNITO_REDIRECT);
 
 // Query client instance
 const queryClient = new QueryClient();

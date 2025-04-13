@@ -18,6 +18,8 @@ import { UploadState } from "@/types/imageProcessing";
 import { AlertCircle, RefreshCcw } from "lucide-react";
 import { parseApiGatewayResponse } from "@/services/imageAnalysisService";
 import { uploadData } from "aws-amplify/storage";
+import amplifyconfig from "../amplifyconfiguration.json";
+
 
 const GetStarted = () => {
   // State management
@@ -32,10 +34,12 @@ const GetStarted = () => {
   const [similarImages, setSimilarImages] = useState<SimilarImage[]>([]);
   const [labels, setLabels] = useState<string[]>([]);
   const { toast } = useToast();
-  
-  // API endpoint for analysis 
-  const apiGatewayUrl = `https://v4gxql7uyk.execute-api.us-east-1.amazonaws.com/Dev/images`;
 
+// const apiGatewayUrl = amplifyconfig.aws_user_files_s3_bucket;
+
+  // API endpoint for analysis 
+  const apiGatewayUrl:string = import.meta.env.VITE_API_GATEWAY_URL;
+ const s3_bucket:string =  import.meta.env.VITE_S3_BUCKET;
   // Handle image selection
   const handleImageSelected = (file: File) => {
     setSelectedFile(file);
@@ -84,7 +88,7 @@ const GetStarted = () => {
     try {
 
        // This would be where we'd use AWS Amplify in a real implementation
-       const fileName = `uploads/${Date.now()}-${selectedFile.name}`;
+       const fileName = `${s3_bucket}uploads/${Date.now()}-${selectedFile.name}`;
        const uploadResult = await uploadData({
          path: fileName,
          data: selectedFile,

@@ -24,7 +24,7 @@ const Dashboard: React.FC<AuthProps>= ({auth}) =>{
   console.log("Auth object:", auth);
   
   // Handle history item selection
-  const handleHistoryItemSelect = (itemId, authToken) => {
+  const handleHistoryItemSelect = (itemId:string, authToken:String) => {
     console.log("History item selected:", itemId);
     console.log("Auth token available:", authToken ? "Yes" : "No");
     

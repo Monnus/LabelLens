@@ -3,7 +3,7 @@ import { SimilarImage } from "@/components/results/SimilarImagesGrid";
 import { HistoryItem } from "@/types/imageProcessing";
 
 // API Gateway URL
-const API_GATEWAY_URL = "https://v4gxql7uyk.execute-api.us-east-1.amazonaws.com/Dev/images/";
+const API_GATEWAY_URL:string = import.meta.env.VITE_API_GATEWAY_URL;
 
 // Session storage key for history
 const HISTORY_STORAGE_KEY = "image-insight-history";
