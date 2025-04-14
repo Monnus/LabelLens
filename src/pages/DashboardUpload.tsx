@@ -26,6 +26,7 @@ const DashboardUpload: React.FC<AuthProps> = ({ auth }) => {
   const userId = auth.isAuthenticated 
     ? auth.user.profile.preferred_username 
     : "";
+    const s3_bucket:string =  import.meta.env.VITE_S3_BUCKET;
 
   // Load history items
   const historyItems = getHistoryItems(userId);
@@ -63,13 +64,13 @@ const DashboardUpload: React.FC<AuthProps> = ({ auth }) => {
     
     try {
       // In a real implementation, this would upload to S3 using AWS Amplify
-      const fileName = `uploads/${Date.now()}-${selectedFile.name}`;
+      const fileNameANDs3Url = `${s3_bucket}auth/${Date.now()}-${selectedFile.name}`;
 
-      console.log("Starting S3 upload for file:", fileName);
+      console.log("Starting S3 upload for file:", fileNameANDs3Url);
       
       // Actual S3 upload using Amplify
       const uploadResult = await uploadData({
-        path: fileName,
+        path: fileNameANDs3Url,
         data: selectedFile,
         options: {
           contentType: selectedFile.type,
@@ -83,8 +84,8 @@ const DashboardUpload: React.FC<AuthProps> = ({ auth }) => {
       
       // After successful upload, save to history
       const newHistoryItem: HistoryItem = {
-        id: `${fileName}`,  // Using filename as ID for simplicity
-        name: `${fileName}`,
+        id: `${fileNameANDs3Url}`,  // Using filename as ID for simplicity
+        name: `${fileNameANDs3Url}`,
         date: new Date().toLocaleDateString(),
         thumbnail: previewUrl || "/placeholder.svg",
         userId
@@ -97,7 +98,7 @@ const DashboardUpload: React.FC<AuthProps> = ({ auth }) => {
         description: "Your image has been uploaded successfully. Starting analysis..."
       });
       
-      return fileName;
+      return fileNameANDs3Url;
     } catch (error) {
       console.error("Error uploading to S3:", error);
       toast({
