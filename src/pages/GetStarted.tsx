@@ -94,7 +94,7 @@ const GetStarted = () => {
        const fileName = `${Date.now()}-${selectedFile.name}`;
        console.log("fileName", fileName)
        const uploadResult = await uploadData({
-         path: `${s3_bucket}unauth/${fileName}`,
+         path: `${s3_bucket}uploads/unauth/${fileName}`,
          data: selectedFile,
          options: {
            contentType: selectedFile.type,
