@@ -40,6 +40,8 @@ const GetStarted = () => {
   // API endpoint for analysis 
   const apiGatewayUrl:string = import.meta.env.VITE_API_GATEWAY_URL;
  const s3_bucket:string =  import.meta.env.VITE_S3_BUCKET;
+ console.log("s3_bucket", s3_bucket)
+
  
   // Handle image selection
   const handleImageSelected = (file: File) => {
@@ -89,7 +91,8 @@ const GetStarted = () => {
     try {
 
        // This would be where we'd use AWS Amplify in a real implementation
-       const fileName = `${s3_bucket}unauth/${Date.now()}-${selectedFile.name}`;
+       const fileName = `unauth/${Date.now()}-${selectedFile.name}`;
+       console.log("fileName", fileName)
        const uploadResult = await uploadData({
          path: fileName,
          data: selectedFile,
