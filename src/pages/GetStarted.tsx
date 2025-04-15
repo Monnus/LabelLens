@@ -91,10 +91,10 @@ const GetStarted = () => {
     try {
 
        // This would be where we'd use AWS Amplify in a real implementation
-       const fileName = `unauth/${Date.now()}-${selectedFile.name}`;
+       const fileName = `${Date.now()}-${selectedFile.name}`;
        console.log("fileName", fileName)
        const uploadResult = await uploadData({
-         path: fileName,
+         path: `${s3_bucket}unauth${fileName}`,
          data: selectedFile,
          options: {
            contentType: selectedFile.type,
