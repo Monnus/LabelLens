@@ -39,10 +39,7 @@ const GetStarted = () => {
 
   // API endpoint for analysis 
   const apiGatewayUrl:string = import.meta.env.VITE_API_GATEWAY_URL;
- const s3_bucket:string =  import.meta.env.VITE_S3_BUCKET;
- console.log("s3_bucket", s3_bucket)
 
- 
   // Handle image selection
   const handleImageSelected = (file: File) => {
     setSelectedFile(file);

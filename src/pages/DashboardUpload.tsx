@@ -64,13 +64,13 @@ const DashboardUpload: React.FC<AuthProps> = ({ auth }) => {
     
     try {
       // In a real implementation, this would upload to S3 using AWS Amplify
-      const fileNameANDs3Url = `${s3_bucket}auth/${Date.now()}-${selectedFile.name}`;
+      const fileName = `${Date.now()}-${selectedFile.name}`;
 
-      console.log("Starting S3 upload for file:", fileNameANDs3Url);
+      console.log("Starting S3 upload for file:", fileName);
       
       // Actual S3 upload using Amplify
       const uploadResult = await uploadData({
-        path: fileNameANDs3Url,
+        path: `uploads/auth/${fileName}`,
         data: selectedFile,
         options: {
           contentType: selectedFile.type,
@@ -84,8 +84,8 @@ const DashboardUpload: React.FC<AuthProps> = ({ auth }) => {
       
       // After successful upload, save to history
       const newHistoryItem: HistoryItem = {
-        id: `${fileNameANDs3Url}`,  // Using filename as ID for simplicity
-        name: `${fileNameANDs3Url}`,
+        id: `${fileName}`,  // Using filename as ID for simplicity
+        name: `${fileName}`,
         date: new Date().toLocaleDateString(),
         thumbnail: previewUrl || "/placeholder.svg",
         userId
@@ -98,7 +98,7 @@ const DashboardUpload: React.FC<AuthProps> = ({ auth }) => {
         description: "Your image has been uploaded successfully. Starting analysis..."
       });
       
-      return fileNameANDs3Url;
+      return fileName;
     } catch (error) {
       console.error("Error uploading to S3:", error);
       toast({
