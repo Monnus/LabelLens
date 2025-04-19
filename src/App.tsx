@@ -13,9 +13,11 @@ import DashboardUpload from "./pages/DashboardUpload";
 import NotFound from "./pages/NotFound";
 import { Amplify } from "aws-amplify";
 import amplifyconfig from "./amplifyconfiguration.json";
+// import awsExports from './aws-exports.ts';
+//  Adjust the path as necessary
 
-// Cognito Auth Config
 Amplify.configure(amplifyconfig);
+
 
 const cognitoAuthConfig = {
   authority: "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_15rmVRJ6C",

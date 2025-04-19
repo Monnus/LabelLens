@@ -12,11 +12,23 @@
       "AmplifyAppId": "d3597sr9908kji"
     },
     "categories": {
-      "auth": {
-        "imagerekognition80dd9028": {}
-      },
       "storage": {
         "imageRekognitionCateforyStorage": {}
+      },
+      "auth": {
+        "labellens204c8282": {
+          "userPoolId": "us-east-1_15rmVRJ6C",
+          "userPoolName": "image- recognition user pool",
+          "webClientId": "4488b559kpbreinm4uvanfec8k",
+          "nativeClientId": "4488b559kpbreinm4uvanfec8k",
+          "identityPoolId": "us-east-1:87a7aea1-838c-4a27-bb7d-4d5b6fd8c2a3",
+          "identityPoolName": "imagerekognition80dd9028_identitypool_80dd9028__dev",
+          "allowUnauthenticatedIdentities": true,
+          "authRoleArn": "arn:aws:iam::590183659901:role/amplify-imagerekognition-dev-f163b-authRole",
+          "authRoleName": "amplify-imagerekognition-dev-f163b-authRole",
+          "unauthRoleArn": "arn:aws:iam::590183659901:role/amplify-imagerekognition-dev-f163b-unauthRole",
+          "unauthRoleName": "amplify-imagerekognition-dev-f163b-unauthRole"
+        }
       }
     }
   }

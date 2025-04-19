@@ -3,7 +3,7 @@ import { SimilarImage } from "@/components/results/SimilarImagesGrid";
 import { HistoryItem } from "@/types/imageProcessing";
 
 // API Gateway URL
-const API_GATEWAY_URL:string = import.meta.env.VITE_API_GATEWAY_URL;
+const API_GATEWAY_URL:string = import.meta.env.VITE_API_URL;
 
 // Session storage key for history
 const HISTORY_STORAGE_KEY = "image-insight-history";
@@ -29,11 +29,12 @@ export const parseApiGatewayResponse = (responseData: any): {
     
     // Handle case where data might be under 'latest' or direct
     const apiData = data.latest || data;
+
     
     // Extract labels from the response
     const labels = apiData.Labels || [];
     const confidenceScores = apiData.ConfidenceScores || [];
-    
+    console.log("data", apiData)
     // Map confidence scores to labels
     const objectsWithConfidence = labels.map((label: string, index: number) => {
       return {
@@ -123,20 +124,21 @@ export const extractImageName = (s3Path: string): string => {
 
 // Fetch image analysis from API Gateway with the correct response format
 export const fetchImageAnalysis = async (imageName: string, authToken: string = "") => {
+
   console.log("Fetching analysis for image:", imageName);
-  console.log("Using auth token:", authToken ? "Token provided" : "No token provided");
+  console.log("Using auth token:", authToken );
   
   try {
     // Only make the API call if we have an auth token
     if (authToken) {
-      const apiUrl = `${API_GATEWAY_URL}${imageName}`;
+      const apiUrl = `${API_GATEWAY_URL}/${imageName}`;
       console.log("Fetching from API:", apiUrl);
       
       try {
         const response = await fetch(apiUrl, {
           method: 'GET',
           headers: {
-            'Authorization': `${authToken}`,
+            'Authorization':`Bearer ${authToken}`,
             'Content-Type': 'application/json'
           }
         });

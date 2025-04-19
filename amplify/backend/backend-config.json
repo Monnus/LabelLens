@@ -1,28 +1,102 @@
 {
   "auth": {
-    "imagerekognition80dd9028": {
+    "labellens204c8282": {
       "customAuth": false,
       "dependsOn": [],
-      "frontendAuthConfig": {
-        "mfaConfiguration": "OFF",
-        "mfaTypes": [
-          "SMS"
-        ],
-        "passwordProtectionSettings": {
-          "passwordPolicyCharacters": [],
-          "passwordPolicyMinLength": 8
-        },
-        "signupAttributes": [
-          "EMAIL"
-        ],
-        "socialProviders": [],
-        "usernameAttributes": [],
-        "verificationMechanisms": [
-          "EMAIL"
-        ]
-      },
       "providerPlugin": "awscloudformation",
-      "service": "Cognito"
+      "service": "Cognito",
+      "serviceType": "imported"
+    }
+  },
+  "function": {},
+  "parameters": {
+    "AMPLIFY_auth_labellens204c8282_allowUnauthenticatedIdentities": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "labellens204c8282"
+        }
+      ]
+    },
+    "AMPLIFY_auth_labellens204c8282_authRoleArn": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "labellens204c8282"
+        }
+      ]
+    },
+    "AMPLIFY_auth_labellens204c8282_authRoleName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "labellens204c8282"
+        }
+      ]
+    },
+    "AMPLIFY_auth_labellens204c8282_identityPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "labellens204c8282"
+        }
+      ]
+    },
+    "AMPLIFY_auth_labellens204c8282_identityPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "labellens204c8282"
+        }
+      ]
+    },
+    "AMPLIFY_auth_labellens204c8282_nativeClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "labellens204c8282"
+        }
+      ]
+    },
+    "AMPLIFY_auth_labellens204c8282_unauthRoleArn": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "labellens204c8282"
+        }
+      ]
+    },
+    "AMPLIFY_auth_labellens204c8282_unauthRoleName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "labellens204c8282"
+        }
+      ]
+    },
+    "AMPLIFY_auth_labellens204c8282_userPoolId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "labellens204c8282"
+        }
+      ]
+    },
+    "AMPLIFY_auth_labellens204c8282_userPoolName": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "labellens204c8282"
+        }
+      ]
+    },
+    "AMPLIFY_auth_labellens204c8282_webClientId": {
+      "usedBy": [
+        {
+          "category": "auth",
+          "resourceName": "labellens204c8282"
+        }
+      ]
     }
   },
   "storage": {

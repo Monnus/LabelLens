@@ -48,12 +48,13 @@ const DashboardSidebar = ({
 
   const handleHistoryItemClick = (itemId: string) => {
     console.log("Sidebar item clicked:", itemId);
-    console.log("Auth token available:", authIDToken ? `Yes`: "No");
+    console.log("Auth token available:", authIDToken ? "Yes" : "No");
     
-    // Call the parent's onHistoryItemSelect function
-    
-  onHistoryItemSelect(itemId, authIDToken)
+    // Always pass both parameters to the parent's function
+    onHistoryItemSelect(itemId, authIDToken);
   };
+
+  const isOnDashboardPage = window.location.pathname === "/dashboard";
 
   return (
     <Sidebar>
@@ -74,6 +75,7 @@ const DashboardSidebar = ({
               <SidebarMenuButton 
                 tooltip="Upload" 
                 onClick={() => navigate("/dashboard/upload")}
+                isActive={window.location.pathname === "/dashboard/upload"}
               >
                 <Upload />
                 <span>Upload New Image</span>
@@ -82,7 +84,8 @@ const DashboardSidebar = ({
             <SidebarMenuItem>
               <SidebarMenuButton 
                 tooltip="History"
-                isActive={true}
+                isActive={isOnDashboardPage}
+                onClick={() => navigate("/dashboard")}
               >
                 <History />
                 <span>Image History</span>
@@ -105,7 +108,7 @@ const DashboardSidebar = ({
                   className={`w-full justify-start text-left h-auto py-2 ${
                     selectedItemId === "1739611571421_camera.jpg" ? "bg-accent text-accent-foreground" : ""
                   }`}
-                  onClick={(e) => {
+                  onClick={() => {
                     console.log("Test button clicked");
                     handleHistoryItemClick("1739611571421_camera.jpg");
                   }}

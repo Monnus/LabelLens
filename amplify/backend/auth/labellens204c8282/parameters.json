@@ -1,0 +1,24 @@
+{
+  "authSelections": "identityPoolAndUserPool",
+  "resourceName": "labellens204c8282",
+  "serviceType": "imported",
+  "region": "us-east-1",
+  "authProvidersUserPool": [],
+  "requiredAttributes": [
+    "preferred_username",
+    "email",
+    "nickname"
+  ],
+  "passwordPolicyMinLength": 8,
+  "passwordPolicyCharacters": [
+    "Requires Lowercase",
+    "Requires Uppercase",
+    "Requires Numbers",
+    "Requires Symbols"
+  ],
+  "mfaConfiguration": "OFF",
+  "autoVerifiedAttributes": [
+    "email"
+  ],
+  "mfaTypes": []
+}
