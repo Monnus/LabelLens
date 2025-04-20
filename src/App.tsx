@@ -13,8 +13,7 @@ import DashboardUpload from "./pages/DashboardUpload";
 import NotFound from "./pages/NotFound";
 import { Amplify } from "aws-amplify";
 import amplifyconfig from "./amplifyconfiguration.json";
-// import awsExports from './aws-exports.ts';
-//  Adjust the path as necessary
+
 
 Amplify.configure(amplifyconfig);
 
