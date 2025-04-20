@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { uploadData } from "aws-amplify/storage";
-import { analyzeImage, saveHistoryItem, fetchImageAnalysis } from "@/services/imageAnalysisService";
+import { saveHistoryItem, fetchImageAnalysis } from "@/services/imageAnalysisService";
 import type { ImageAnalysis } from "@/components/results/ImageAnalysisResult";
 import type { SimilarImage } from "@/components/results/SimilarImagesGrid";
 import type { HistoryItem } from "@/types/imageProcessing";
@@ -76,11 +76,12 @@ export const useImageAnalysis = (userId: string, authToken: string) => {
     }
   };
 
-  const fetchResults = async (fileName: string) => {
+  const fetchResults = async (fileName: string, authToken:string) => {
     setIsAnalyzing(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
-      const { analysis, similarImages, labels } = await analyzeImage();
+      const { analysis, similarImages, labels } = await fetchImageAnalysis(fileName,authToken);
+      console.log("fileName useImageAnalysis.ts", fileName);
       
       setAnalysisResults(analysis);
       setSimilarImages(similarImages);
@@ -110,10 +111,10 @@ export const useImageAnalysis = (userId: string, authToken: string) => {
       setSimilarImages(similarImages);
       setLabels(labels);
       
-      toast({
-        title: "Image Loaded",
-        description: `Successfully loaded ${id}`
-      });
+      // toast({
+      //   title: "Image Loaded",
+      //   description: `Successfully loaded ${id}`
+      // });
     } catch (error) {
       console.error("Error loading image:", error);
       toast({
@@ -130,7 +131,7 @@ export const useImageAnalysis = (userId: string, authToken: string) => {
     try {
       const fileName = await uploadImageToS3(file);
       setUploadedFileName(fileName);
-      await fetchResults(fileName);
+      await fetchResults(fileName, authToken);
     } catch (error) {
       console.error("Error in upload/analysis process:", error);
     }

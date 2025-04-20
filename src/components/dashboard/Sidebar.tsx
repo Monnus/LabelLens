@@ -102,7 +102,7 @@ const DashboardSidebar = ({
             <ScrollArea className="h-[400px] pr-4">
               <div className="space-y-1">
                 {/*Test button for fetching from API*/}
-                <Button
+                {/* <Button
                   key="test-button"
                   variant="ghost"
                   className={`w-full justify-start text-left h-auto py-2 ${
@@ -126,7 +126,7 @@ const DashboardSidebar = ({
                       <p className="text-xs text-muted-foreground">1739611571421</p>
                     </div>
                   </div>
-                </Button>
+                </Button> */}
 
                 {/* Render actual history items */}
                 {historyItems.map((item) => (

@@ -124,156 +124,57 @@ export const extractImageName = (s3Path: string): string => {
 
 // Fetch image analysis from API Gateway with the correct response format
 export const fetchImageAnalysis = async (imageName: string, authToken: string = "") => {
-
   console.log("Fetching analysis for image:", imageName);
-  console.log("Using auth token:", authToken );
-  
-  try {
-    // Only make the API call if we have an auth token
-    if (authToken) {
-      const apiUrl = `${API_GATEWAY_URL}/${imageName}`;
-      console.log("Fetching from API:", apiUrl);
-      
-      try {
-        const response = await fetch(apiUrl, {
-          method: 'GET',
-          headers: {
-            'Authorization':`Bearer ${authToken}`,
-            'Content-Type': 'application/json'
-          }
-        });
-        
-        if (!response.ok) {
-          throw new Error(`API request failed with status ${response.status}`);
+  console.log("Using auth token:", authToken);
+
+  // If an auth token is present, try calling the real API
+  if (authToken) {
+    const apiUrl = `${API_GATEWAY_URL}/${imageName}`;
+    console.log("Fetching from API:", apiUrl);
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
         }
-        
-        const responseText = await response.text();
-        console.log("Raw API response:", responseText);
-        
-        try {
-          // Try to parse the response as JSON
-          const responseData = JSON.parse(responseText);
-          console.log("Parsed API response:", responseData);
-          
-          // Parse the response data using our utility function
-          const { analysis, labels } = parseApiGatewayResponse(responseData);
-          
-          // Generate mock similar images based on the labels
-          const similarImages: SimilarImage[] = labels.slice(0, 4).map((label, i) => ({
-            id: `${label}-${i}`,
-            url: `https://source.unsplash.com/random/300x300?${encodeURIComponent(label)}&sig=${i}`,
-            thumbnailUrl: `https://source.unsplash.com/random/300x300?${encodeURIComponent(label)}&sig=${i}`,
-            title: `${label}`,
-            author: `Unsplash`,
-            authorUrl: `https://unsplash.com`
-          }));
-          
-          return {
-            analysis,
-            similarImages,
-            labels
-          };
-        } catch (parseError) {
-          console.error("Error parsing API response:", parseError);
-          throw new Error("Invalid response format from API");
-        }
-      } catch (fetchError) {
-        console.error("Fetch error:", fetchError);
-        throw fetchError;
+      });
+
+      if (!response.ok) {
+        throw new Error(`API request failed with status ${response.status}`);
       }
+
+      const responseText = await response.text();
+      console.log("Raw API response:", responseText);
+
+      const responseData = JSON.parse(responseText);
+      console.log("Parsed API response:", responseData);
+
+      const { analysis, labels } = parseApiGatewayResponse(responseData);
+      console.log("analysis", analysis, "labels", labels);
+
+      const similarImages: SimilarImage[] = labels.slice(0, 4).map((label, i) => ({
+        id: `${label}-${i}`,
+        url: `https://source.unsplash.com/random/300x300?${encodeURIComponent(label)}&sig=${i}`,
+        thumbnailUrl: `https://source.unsplash.com/random/300x300?${encodeURIComponent(label)}&sig=${i}`,
+        title: label,
+        author: "Unsplash",
+        authorUrl: "https://unsplash.com"
+      }));
+
+      // return console.log("analysis,similarImages,labels",analysis, similarImages,labels)
+      return {analysis,similarImages,labels};
+     
+    } catch (error) {
+      console.error("Fetch or parse error:", error);
+      // Fall through to return mock data
     }
-    
-    // If we don't have an auth token or the API call failed, return mock data
-    console.log("Returning mock analysis data based on camera example");
-    
-    // Using the provided example data structure
-    const mockApiResponse = {
-      Timestamp: "2025-02-15T09:26:12.062Z",
-      ImageID: "1739611571421_camera.jpg",
-      Labels: [
-        "Camera",
-        "Digital Camera",
-        "Electronics",
-        "Photography",
-        "Speaker",
-        "Video Camera"
-      ],
-      ConfidenceScores: [
-        72.07,
-        75.18,
-        99.84,
-        71.02,
-        99.93,
-        85.64
-      ],
-      ImageURL: "https://image-recognizer-bucket.s3.amazonaws.com/uploads/camera.jpg"
-    };
-    
-    const { analysis, labels } = parseApiGatewayResponse(mockApiResponse);
-    
-    // Mock similar images based on the labels
-    const similarImages = labels.slice(0, 4).map((label, i) => ({
-      id: `${label}-${i}`,
-      url: `https://source.unsplash.com/random/300x300?${encodeURIComponent(label)}&sig=${i}`,
-      thumbnailUrl: `https://source.unsplash.com/random/300x300?${encodeURIComponent(label)}&sig=${i}`,
-      title: `${label}`,
-      author: `Unsplash`,
-      authorUrl: `https://unsplash.com`
-    }));
-    
-    return {
-      analysis,
-      similarImages,
-      labels
-    };
-  } catch (error) {
-    console.error("Error in fetchImageAnalysis:", error);
-    throw error;
   }
+
 };
 
-// Simulate image analysis - in real implementation, this would call AWS API Gateway
-export const analyzeImage = async (): Promise<{
-  analysis: ImageAnalysis;
-  similarImages: SimilarImage[];
-  labels: string[];
-}> => {
-  // Simulate API call delay
-  await new Promise(resolve => setTimeout(resolve, 2000));
-  
-  // Sample response from API Gateway
-  const mockApiResponse = {
-    statusCode: 200,
-    body: JSON.stringify({
-      latest: {
-        Timestamp: "2025-03-16T21:04:27.014Z",
-        ImageID: "1742159056388-bags andd bags.jpg",
-        Labels: ["Accessories", "Backpack", "Bag", "Clothing", "Coat", "Handbag", "Lifejacket", "Vest"],
-        ConfidenceScores: [80.58, 98.95, 88.58, 85.74, 99.58, 89.17],
-        ImageURL: "https://image-rekognition-bucketf163b-dev.s3.amazonaws.com/uploads/1742159056388-bags andd bags.jpg"
-      }
-    })
-  };
-  
-  // Parse the response
-  const { analysis, labels } = parseApiGatewayResponse(mockApiResponse);
-  
-  // Mock similar images
-  const mockSimilarImages: SimilarImage[] = Array(6).fill(0).map((_, i) => ({
-    id: `img-${i}`,
-    url: `https://source.unsplash.com/random/300x300?sig=${i}`,
-    thumbnailUrl: `https://source.unsplash.com/random/300x300?sig=${i}`,
-    title: `Similar Image ${i + 1}`,
-    author: `Author ${i + 1}`,
-    authorUrl: `https://unsplash.com/@author${i}`
-  }));
-  
-  return {
-    analysis,
-    similarImages: mockSimilarImages,
-    labels
-  };
-};
+
 
 // Function to fetch images from Unsplash based on a label
 export const fetchImagesForLabel = async (label: string): Promise<SimilarImage[]> => {
@@ -290,3 +191,4 @@ export const fetchImagesForLabel = async (label: string): Promise<SimilarImage[]
     authorUrl: `https://unsplash.com/@author${i}`
   }));
 };
+
