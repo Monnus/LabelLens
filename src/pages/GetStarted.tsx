@@ -39,7 +39,7 @@ const GetStarted = () => {
 
   // API endpoint for analysis 
   const apiGatewayUrl:string = import.meta.env.VITE_API_URL;
-
+console.log("apiGatewayUrl", apiGatewayUrl);
   // Handle image selection
   const handleImageSelected = (file: File) => {
     setSelectedFile(file);
