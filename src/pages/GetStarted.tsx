@@ -38,7 +38,7 @@ const GetStarted = () => {
 // const apiGatewayUrl = amplifyconfig.aws_user_files_s3_bucket;
 
   // API endpoint for analysis 
-  const apiGatewayUrl:string = import.meta.env.VITE_API_GATEWAY_URL;
+  const apiGatewayUrl:string = import.meta.env.VITE_API_URL;
 
   // Handle image selection
   const handleImageSelected = (file: File) => {
@@ -162,7 +162,7 @@ const GetStarted = () => {
         // Show success toast
         toast({
           title: "Analysis Complete",
-          description: `Found ${parsedBody.Labels.length} labels in your image`
+          description: `Found ${parsedBody?.Labels?.length} labels in your image`
         });
       })
       .catch((error) => {
@@ -186,7 +186,7 @@ const GetStarted = () => {
     try {
       // Attempt to make the API call
       const response = await fetch(apiGatewayUrl, {
-        method: "GET",
+        method: "GET"
        
       }).then((res) => {
         if (!res.ok) {
@@ -241,7 +241,7 @@ console.log(error);
   // Retry the analysis process
   const handleRetryAnalysis = () => {
     setAnalysisError(null);
-    handleAnalyzeClick();
+    fetchAnalysisWithRetry()
   };
 
   return (

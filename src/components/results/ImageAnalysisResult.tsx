@@ -1,17 +1,24 @@
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { InfoIcon } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { InfoIcon, Camera } from "lucide-react";
 
 // Define the structure for image analysis results
 export type ImageAnalysis = {
   objects?: string[];
+  confidence?: Array<{
+    label: string;
+    score: number;
+  }>;
   colors?: Array<{
     name: string;
     hex: string;
     percentage: number;
   }>;
   tags?: string[];
+  timestamp?: string;
+  imageUrl?: string;
   // Add more fields as needed
 };
 
@@ -21,6 +28,11 @@ type ImageAnalysisResultProps = {
 };
 
 const ImageAnalysisResult = ({ analysis, imageUrl }: ImageAnalysisResultProps) => {
+  // Format date if available
+  const formattedDate = analysis.timestamp 
+    ? new Date(analysis.timestamp).toLocaleString()
+    : null;
+
   return (
     <div className="w-full">
       <Card className="border">
@@ -30,18 +42,36 @@ const ImageAnalysisResult = ({ analysis, imageUrl }: ImageAnalysisResultProps) =
             Image Analysis Results
           </CardTitle>
           <CardDescription>
-            Detailed information about your uploaded image
+            {formattedDate ? `Analyzed on ${formattedDate}` : 'Detailed information about your uploaded image'}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Image Preview */}
           <div className="aspect-video rounded-md overflow-hidden bg-muted/50 border">
             <img 
-              src={imageUrl} 
+              src={analysis.imageUrl || imageUrl} 
               alt="Analyzed image" 
               className="w-full h-full object-contain"
             />
           </div>
+          
+          {/* Confidence Scores Section */}
+          {analysis.confidence && analysis.confidence.length > 0 && (
+            <div>
+              <h3 className="text-lg font-medium mb-3">Object Detection Confidence</h3>
+              <div className="space-y-3">
+                {analysis.confidence.map((item, i) => (
+                  <div key={i} className="space-y-1">
+                    <div className="flex justify-between items-center">
+                      <span className="font-medium text-sm">{item.label}</span>
+                      <span className="text-sm text-muted-foreground">{item.score.toFixed(2)}%</span>
+                    </div>
+                    <Progress value={item.score} className="h-2" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
           
           {/* Objects Section */}
           {analysis.objects && analysis.objects.length > 0 && (

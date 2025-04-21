@@ -44,7 +44,7 @@ const DashboardContent = ({
     setError(null);
     
     try {
-      const { analysis, similarImages, labels } = await fetchImageAnalysis(selectedItemId, authIDToken);
+      const {analysis,similarImages,labels } = await fetchImageAnalysis(selectedItemId, authIDToken);
       
       console.log("Analysis results:", analysis);
       console.log("Labels:", labels);
