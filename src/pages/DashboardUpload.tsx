@@ -13,7 +13,7 @@ const DashboardUpload: React.FC<AuthProps> = ({ auth }) => {
   const [selectedItemId, setSelectedItemId] = useState<string | undefined>(undefined);
   const userId = auth.isAuthenticated ? auth.user.profile.preferred_username : "";
   const historyItems = getHistoryItems(userId);
-  console.log("auth", auth);
+  // log here("auth", auth);
   
   const {
     previewUrl,

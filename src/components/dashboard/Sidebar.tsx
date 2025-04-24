@@ -47,8 +47,8 @@ const DashboardSidebar = ({
   };
 
   const handleHistoryItemClick = (itemId: string) => {
-    console.log("Sidebar item clicked:", itemId);
-    console.log("Auth token available:", authIDToken ? "Yes" : "No");
+    // log here("Sidebar item clicked:", itemId);
+    // log here("Auth token available:", authIDToken ? "Yes" : "No");
     
     // Always pass both parameters to the parent's function
     onHistoryItemSelect(itemId, authIDToken);
@@ -109,7 +109,7 @@ const DashboardSidebar = ({
                     selectedItemId === "1739611571421_camera.jpg" ? "bg-accent text-accent-foreground" : ""
                   }`}
                   onClick={() => {
-                    console.log("Test button clicked");
+                    // log here("Test button clicked");
                     handleHistoryItemClick("1739611571421_camera.jpg");
                   }}
                 >

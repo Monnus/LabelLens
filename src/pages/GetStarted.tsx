@@ -39,7 +39,7 @@ const GetStarted = () => {
 
   // API endpoint for analysis 
   const apiGatewayUrl:string = import.meta.env.VITE_API_URL;
-console.log("apiGatewayUrl", apiGatewayUrl);
+// log here("apiGatewayUrl", apiGatewayUrl);
   // Handle image selection
   const handleImageSelected = (file: File) => {
     setSelectedFile(file);
@@ -89,7 +89,7 @@ console.log("apiGatewayUrl", apiGatewayUrl);
 
        // This would be where we'd use AWS Amplify in a real implementation
        const fileName = `${Date.now()}-${selectedFile.name}`;
-       console.log("fileName", fileName)
+       // log here("fileName", fileName)
        const uploadResult = await uploadData({
          path: `uploads/unauth/${fileName}`,
          data: selectedFile,
@@ -100,7 +100,7 @@ console.log("apiGatewayUrl", apiGatewayUrl);
            },
          },
        }).result;
-       console.log("file uploaded to S3", uploadResult);
+       // log here("file uploaded to S3", uploadResult);
        setProcessState('uploaded');
     
     } catch (error) {
@@ -147,8 +147,8 @@ console.log("apiGatewayUrl", apiGatewayUrl);
         const parsedBody = data.latest;  // Parse the actual body from the response
   
         // Log fetched data for debugging
-        console.log("Fetched const data:", data);
-        console.log("Fetched const parsedBody:", parsedBody);
+        // log here("Fetched const data:", data);
+        // log here("Fetched const parsedBody:", parsedBody);
   
         // Set the analysis results, labels, and similar images
         setLabels(parsedBody.Labels || []);
@@ -156,7 +156,7 @@ console.log("apiGatewayUrl", apiGatewayUrl);
         setPreviewUrl(parsedBody.ImageURL)
         // setSimilarImages(parsedBody.similarImages);
         setProcessState('complete');
-        // console.log("Labels", parsedBody.latest);
+        // // log here("Labels", parsedBody.latest);
 
   
         // Show success toast
@@ -198,12 +198,12 @@ console.log("apiGatewayUrl", apiGatewayUrl);
         }
         // Log the response object for debugging
         const data= res.json();
-        console.log("data", data);
+        // log here("data", data);
         return data // Assuming the response is in JSON format
       })
       .then((data) => {
         // Once we get the parsed JSON data, we can work with it
-        console.log("Response data:", data);
+        // log here("Response data:", data);
         // Process your data here as needed
        const parsedBody=data.latest;
 
@@ -217,7 +217,7 @@ console.log("apiGatewayUrl", apiGatewayUrl);
   
 return;
 }catch(error){
-console.log(error);
+// log here(error);
 }
     
   };

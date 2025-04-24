@@ -42,7 +42,7 @@ export const useImageAnalysis = (userId: string, authToken: string) => {
         options: {
           contentType: file.type,
           onProgress: (progress) => {
-            console.log(`Upload progress: ${(progress.transferredBytes / progress.totalBytes) * 100}%`);
+            // log here(`Upload progress: ${(progress.transferredBytes / progress.totalBytes) * 100}%`);
           },
         },
       }).result;
@@ -81,7 +81,7 @@ export const useImageAnalysis = (userId: string, authToken: string) => {
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
       const { analysis, similarImages, labels } = await fetchImageAnalysis(fileName,authToken);
-      console.log("fileName useImageAnalysis.ts", fileName);
+      // log here("fileName useImageAnalysis.ts", fileName);
       
       setAnalysisResults(analysis);
       setSimilarImages(similarImages);

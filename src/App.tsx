@@ -26,7 +26,7 @@ const cognitoAuthConfig = {
   scope: "openid",
 };
 
-console.log("Redirect URI:", import.meta.env.VITE_COGNITO_REDIRECT);
+// log here("Redirect URI:", import.meta.env.VITE_COGNITO_REDIRECT);
 
 // Query client instance
 const queryClient = new QueryClient();

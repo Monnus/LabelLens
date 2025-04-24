@@ -21,17 +21,17 @@ const Dashboard: React.FC<AuthProps>= ({auth}) =>{
     ? auth.user.profile.preferred_username 
     : "";
   
-  console.log("Auth object:", auth);
+  // log here("Auth object:", auth);
   
   // Handle history item selection
   const handleHistoryItemSelect = (itemId:string, authToken:String) => {
-    console.log("History item selected:", itemId);
-    console.log("Auth token available:", authToken ? "Yes" : "No");
+    // log here("History item selected:", itemId);
+    // log here("Auth token available:", authToken ? "Yes" : "No");
     
     if (selectedItemId === itemId) {
       // If the same item is selected again, increment the counter to force a refetch
       setForceRefetch(prev => prev + 1);
-      console.log("Force refetching same item");
+      // log here("Force refetching same item");
     } else {
       // Otherwise just update the selected item
       setSelectedItemId(itemId);

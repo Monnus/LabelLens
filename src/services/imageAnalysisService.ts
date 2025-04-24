@@ -34,7 +34,7 @@ export const parseApiGatewayResponse = (responseData: any): {
     // Extract labels from the response
     const labels = apiData.Labels || [];
     const confidenceScores = apiData.ConfidenceScores || [];
-    console.log("data", apiData)
+    // log here("data", apiData)
     // Map confidence scores to labels
     const objectsWithConfidence = labels.map((label: string, index: number) => {
       return {
@@ -124,15 +124,16 @@ export const extractImageName = (s3Path: string): string => {
 
 // Fetch image analysis from API Gateway with the correct response format
 export const fetchImageAnalysis = async (imageName: string, authToken: string = "") => {
-  console.log("Fetching analysis for image:", imageName);
-  console.log("Using auth token:", authToken);
+  // log here("Fetching analysis for image:", imageName);
+  // log here("Using auth token:", authToken);
 
   // If an auth token is present, try calling the real API
   if (authToken) {
     const apiUrl = `${API_GATEWAY_URL}/${imageName}`;
-    console.log("Fetching from API:", apiUrl);
-
+    // log here("Fetching from API:", apiUrl);
+    
     try {
+      await new Promise(resolve => setTimeout(resolve, 6000)); // wait 6s
       const response = await fetch(apiUrl, {
         method: 'GET',
         headers: {
@@ -146,13 +147,13 @@ export const fetchImageAnalysis = async (imageName: string, authToken: string = 
       }
 
       const responseText = await response.text();
-      console.log("Raw API response:", responseText);
+      // log here("Raw API response:", responseText);
 
       const responseData = JSON.parse(responseText);
-      console.log("Parsed API response:", responseData);
+      // log here("Parsed API response:", responseData);
 
       const { analysis, labels } = parseApiGatewayResponse(responseData);
-      console.log("analysis", analysis, "labels", labels);
+      // log here("analysis", analysis, "labels", labels);
 
       const similarImages: SimilarImage[] = labels.slice(0, 4).map((label, i) => ({
         id: `${label}-${i}`,
@@ -163,7 +164,7 @@ export const fetchImageAnalysis = async (imageName: string, authToken: string = 
         authorUrl: "https://unsplash.com"
       }));
 
-      // return console.log("analysis,similarImages,labels",analysis, similarImages,labels)
+      // return // log here("analysis,similarImages,labels",analysis, similarImages,labels)
       return {analysis,similarImages,labels};
      
     } catch (error) {

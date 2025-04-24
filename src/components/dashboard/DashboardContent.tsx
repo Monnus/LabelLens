@@ -37,8 +37,8 @@ const DashboardContent = ({
   const loadImageAnalysis = useCallback(async () => {
     if (!selectedItemId || !isAuthenticated) return;
     
-    console.log("Loading analysis for image:", selectedItemId);
-    console.log("Auth token available:", authIDToken ? "Yes" : "No");
+    // log here("Loading analysis for image:", selectedItemId);
+    // log here("Auth token available:", authIDToken ? "Yes" : "No");
     
     setIsLoading(true);
     setError(null);
@@ -46,8 +46,8 @@ const DashboardContent = ({
     try {
       const {analysis,similarImages,labels } = await fetchImageAnalysis(selectedItemId, authIDToken);
       
-      console.log("Analysis results:", analysis);
-      console.log("Labels:", labels);
+      // log here("Analysis results:", analysis);
+      // log here("Labels:", labels);
       
       setAnalysis(analysis);
       setSimilarImages(similarImages);
@@ -77,8 +77,8 @@ const DashboardContent = ({
 
   // Run when selectedItemId changes or when forceRefetch changes
   useEffect(() => {
-    console.log("useEffect triggered - selectedItemId:", selectedItemId);
-    console.log("forceRefetch counter:", forceRefetch);
+    // log here("useEffect triggered - selectedItemId:", selectedItemId);
+    // log here("forceRefetch counter:", forceRefetch);
     loadImageAnalysis();
   }, [loadImageAnalysis, selectedItemId, forceRefetch]);
 

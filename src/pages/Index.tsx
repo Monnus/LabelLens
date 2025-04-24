@@ -9,11 +9,11 @@ import { AuthProps } from "@/types/AuthProps";
 const Index:React.FC<AuthProps> = ({auth}) => {
   const navigate = useNavigate();
   // const auth=useAuth();
-  console.log("Here is auth", auth);
+  // log here("Here is auth", auth);
   
 
   const isUserSignedIn = ():void=>{
-    console.log(auth.isAuthenticated)
+    // log here(auth.isAuthenticated)
 if(auth.isAuthenticated) return navigate("/dashboard");
   navigate("get-started");
   };
