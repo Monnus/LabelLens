@@ -133,7 +133,7 @@ console.log("apiGatewayUrl", apiGatewayUrl);
     setIsAnalyzing(true);
     setProcessState('analyzing');
     setAnalysisError(null);
-  
+    await new Promise(resolve => setTimeout(resolve, 6000)); // wait 6s
     fetch(apiGatewayUrl, {
       method: "GET"
     })
@@ -184,7 +184,10 @@ console.log("apiGatewayUrl", apiGatewayUrl);
   // Utility function to retry analysis with backoff
   const fetchAnalysisWithRetry = async (retries = 3, delay = 1000) => {
     try {
+      setProcessState('analyzing');
+
       // Attempt to make the API call
+      await new Promise(resolve => setTimeout(resolve, 6000)); // wait 6s
       const response = await fetch(apiGatewayUrl, {
         method: "GET"
        
@@ -206,6 +209,7 @@ console.log("apiGatewayUrl", apiGatewayUrl);
 
         setLabels(parsedBody?.Labels || []);
         setAnalysisResults(parsedBody);
+        setPreviewUrl(parsedBody.ImageURL)
         // setSimilarImages(parsedBody?.);
         setProcessState('complete');
         setAnalysisError(null);
