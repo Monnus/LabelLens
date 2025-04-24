@@ -24,7 +24,7 @@ dist-ssr
 *.sw?
 .qodo
 .env.local
-aws.export.js
+aws.exports.js
 
 #amplify-do-not-edit-begin
 amplify/\#current-cloud-backend
